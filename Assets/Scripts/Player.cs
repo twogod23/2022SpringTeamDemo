@@ -73,6 +73,7 @@ public class Player : MonoBehaviour {
  
 	void Update() {
 		CheckGround();
+		
 		if (isGrounded && !isTouch) {
 			velocity = Vector3.zero;
             input.x = Input.GetAxis("Horizontal");
