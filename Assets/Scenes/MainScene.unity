@@ -337,7 +337,7 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 676d5eb86af12df47b161515473052da, type: 2}
     - target: {fileID: 9500000, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
       propertyPath: m_ApplyRootMotion
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 11400042, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
@@ -494,6 +494,7 @@ MonoBehaviour:
   move_speed: 3
   Grounded: 0
   Jumppower: 350
+  rayDistance: 0.5
 --- !u!1 &1624068848
 GameObject:
   m_ObjectHideFlags: 0
