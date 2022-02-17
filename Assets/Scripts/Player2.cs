@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class Player2 : MonoBehaviour
 {
-    private float inputHorizontal;
-    private float inputVertical;
     //プレイヤーの移動する速さ
     public float move_speed = 15;
 
     //プレイヤーの回転する速さ
     public float rotate_speed = 5;
+
+    //プレイヤーの回転する向き
+    //1 -> （プレイヤーから見て）時計回り
+    //-1 -> （プレイヤーから見て）反時計回り
+    private int rotate_direction = 0;
 
     //プレイヤーのRigidbody
     private Rigidbody Rig = null;
@@ -30,27 +33,13 @@ public class Player2 : MonoBehaviour
     void Update()
     {
         Jump();
-        inputHorizontal = Input.GetAxisRaw("Horizontal");
-        inputVertical = Input.GetAxisRaw("Vertical");     
     }
 
     private void FixedUpdate()
     {
-        // カメラの方向から、X-Z平面の単位ベクトルを取得
-        Vector3 cameraForward = Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 1, 1)).normalized;
- 
-        // 方向キーの入力値とカメラの向きから、移動方向を決定
-        Vector3 moveForward = cameraForward * inputVertical + Camera.main.transform.right * inputHorizontal;
- 
-        // 移動方向にスピードを掛ける。ジャンプや落下がある場合は、別途Y軸方向の速度ベクトルを足す。
-        Rig.velocity = moveForward * move_speed + new Vector3(0, Rig.velocity.y, 0);
- 
-        // キャラクターの向きを進行方向に
-        if (moveForward != Vector3.zero) {
-            transform.rotation = Quaternion.LookRotation(moveForward);
-        }
+        Horizontal_Rotate();
 
-        Vector3 move_direction = cameraForward * inputHorizontal + Camera.main.transform.right * inputVertical;
+        Vector3 move_direction = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
 
         Rig.MovePosition(Rig.position + transform.TransformDirection(move_direction) * move_speed * Time.deltaTime);
     }
@@ -69,9 +58,32 @@ public class Player2 : MonoBehaviour
 
     void OnCollisionEnter(Collision other)//  他オブジェクトに触れた時の処理
     {
-        if (other.gameObject.tag == "Cloud")//  もしPlanetというタグがついたオブジェクトに触れたら、
+        if (other.gameObject.tag == "Cloud")//  もしCloudというタグがついたオブジェクトに触れたら、
         {
             Grounded = true;//  Groundedをtrueにする
         }
+    }
+
+    void Horizontal_Rotate()
+    {
+        if (Input.GetKey(KeyCode.Q))
+        {
+            rotate_direction = -1;
+        }
+        else if (Input.GetKey(KeyCode.E))
+        {
+            rotate_direction = 1;
+        }
+        else
+        {
+            rotate_direction = 0;
+        }
+
+        // オブジェクトからみて垂直方向を軸として回転させるQuaternionを作成
+        Quaternion rot = Quaternion.AngleAxis(rotate_direction * rotate_speed, transform.up);
+        // 現在の自信の回転の情報を取得する。
+        Quaternion q = this.transform.rotation;
+        // 合成して、自身に設定
+        this.transform.rotation = rot * q;
     }
 }
