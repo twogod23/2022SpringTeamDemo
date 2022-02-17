@@ -16,7 +16,7 @@ namespace UnityChan
 	public class UnityChanControlScriptWithRgidBody : MonoBehaviour
 	{
 
-		public float animSpeed = 1.0f;				// アニメーション再生速度設定
+		public float animSpeed = 1.5f;				// アニメーション再生速度設定
 		public float lookSmoother = 3.0f;			// a smoothing setting for camera motion
 		public bool useCurves = true;				// Mecanimでカーブ調整を使うか設定する
 		// このスイッチが入っていないとカーブは使われない
@@ -50,8 +50,6 @@ namespace UnityChan
 		static int jumpState = Animator.StringToHash ("Base Layer.Jump");
 		static int restState = Animator.StringToHash ("Base Layer.Rest");
 
-		private Vector3 playerPosition; //プレイヤーの位置情報を格納する
-
 		// 初期化
 		void Start ()
 		{
@@ -65,9 +63,6 @@ namespace UnityChan
 			// CapsuleColliderコンポーネントのHeight、Centerの初期値を保存する
 			orgColHight = col.height;
 			orgVectColCenter = col.center;
-
-			//初期状態のプレイヤー位置情報を格納
-			playerPosition = GetComponent<Transform>().position;
 		}
 	
 	
@@ -76,23 +71,8 @@ namespace UnityChan
 		{
 			float h = Input.GetAxis ("Horizontal");				// 入力デバイスの水平軸をhで定義
 			float v = Input.GetAxis ("Vertical");				// 入力デバイスの垂直軸をvで定義
-//			anim.SetFloat ("Speed", v);							// Animator側で設定している"Speed"パラメタにvを渡す
-//			anim.SetFloat ("Direction", h);                         // Animator側で設定している"Direction"パラメタにhを渡す
-
-			//入力値を移動量とするため、マイナス値の場合のみプラスに補正
-			float move_h = h;
-			if( move_h < 0 )
-			{
-				move_h = move_h * -1;
-			}
-
-			float move_v = v;
-			if (move_v < 0)
-			{
-				move_v = move_v * -1;
-			}
-			anim.SetFloat("Speed", move_h + move_v );           // Animator側で設定している"Speed"パラメタに移動量を渡す
-
+			anim.SetFloat ("Speed", v);							// Animator側で設定している"Speed"パラメタにvを渡す
+			anim.SetFloat ("Direction", h); 						// Animator側で設定している"Direction"パラメタにhを渡す
 			anim.speed = animSpeed;								// Animatorのモーション再生速度に animSpeedを設定する
 			currentBaseState = anim.GetCurrentAnimatorStateInfo (0);	// 参照用のステート変数にBase Layer (0)の現在のステートを設定する
 			rb.useGravity = true;//ジャンプ中に重力を切るので、それ以外は重力の影響を受けるようにする
@@ -100,28 +80,23 @@ namespace UnityChan
 		
 		
 			// 以下、キャラクターの移動処理
-//			velocity = new Vector3 (0, 0, v);       // 上下のキー入力からZ軸方向の移動量を取得
-			velocity = new Vector3 (h, 0, v);        // 上下のキー入力からZ軸とX軸方向の移動量を取得
-
+			velocity = new Vector3 (0, 0, v);		// 上下のキー入力からZ軸方向の移動量を取得
 			// キャラクターのローカル空間での方向に変換
-//			velocity = transform.TransformDirection (velocity);
+			velocity = transform.TransformDirection (velocity);
 			//以下のvの閾値は、Mecanim側のトランジションと一緒に調整する
-//			if (v > 0.1) {
-//				velocity *= forwardSpeed;		// 移動速度を掛ける
-//			} else if (v < -0.1) {
-//				velocity *= backwardSpeed;	// 移動速度を掛ける
-//			}
-
-			velocity *= forwardSpeed;
-
-
+			if (v > 0.1) {
+				velocity *= forwardSpeed;		// 移動速度を掛ける
+			} else if (v < -0.1) {
+				velocity *= backwardSpeed;	// 移動速度を掛ける
+			}
+		
 			if (Input.GetButtonDown ("Jump")) {	// スペースキーを入力したら
 
 				//アニメーションのステートがLocomotionの最中のみジャンプできる
 				if (currentBaseState.fullPathHash == locoState) {
 					//ステート遷移中でなかったらジャンプできる
 					if (!anim.IsInTransition (0)) {
-//						rb.AddForce (Vector3.up * jumpPower, ForceMode.VelocityChange);
+						rb.AddForce (Vector3.up * jumpPower, ForceMode.VelocityChange);
 						anim.SetBool ("Jump", true);		// Animatorにジャンプに切り替えるフラグを送る
 					}
 				}
@@ -132,19 +107,8 @@ namespace UnityChan
 			transform.localPosition += velocity * Time.fixedDeltaTime;
 
 			// 左右のキー入力でキャラクタをY軸で旋回させる
-			//			transform.Rotate (0, h * rotateSpeed, 0);	
-
-			//移動後のキャラクターが前回からどの方向に進んだか差分を取得する
-			Vector3 diff = transform.position - playerPosition;
-
-			if (diff.magnitude > 0.01f) 
-			{
-				//差異があった場合にのみ向きを変更する
-				transform.rotation = Quaternion.LookRotation(diff);
-			}
-
-			playerPosition = transform.position; //プレイヤー位置情報を更新
-
+			transform.Rotate (0, h * rotateSpeed, 0);	
+	
 
 			// 以下、Animatorの各ステート中での処理
 			// Locomotion中
@@ -178,9 +142,9 @@ namespace UnityChan
 						// 高さが useCurvesHeight 以上ある時のみ、コライダーの高さと中心をJUMP00アニメーションについているカーブで調整する
 						if (Physics.Raycast (ray, out hitInfo)) {
 							if (hitInfo.distance > useCurvesHeight) {
-//								col.height = orgColHight - jumpHeight;			// 調整されたコライダーの高さ
-//								float adjCenterY = orgVectColCenter.y + jumpHeight;
-//								col.center = new Vector3 (0, adjCenterY, 0);	// 調整されたコライダーのセンター
+								col.height = orgColHight - jumpHeight;			// 調整されたコライダーの高さ
+								float adjCenterY = orgVectColCenter.y + jumpHeight;
+								col.center = new Vector3 (0, adjCenterY, 0);	// 調整されたコライダーのセンター
 							} else {
 								// 閾値よりも低い時には初期値に戻す（念のため）					
 								resetCollider ();

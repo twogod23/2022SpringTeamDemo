@@ -339,9 +339,15 @@ PrefabInstance:
       propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 11400040, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400042, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
-    - {fileID: 11400042, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
-    - {fileID: 11400040, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
     - {fileID: 11400110, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
     - {fileID: 11400112, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
     - {fileID: 11400114, guid: 49f2055d53eeb4e5a92af590a44bddee, type: 3}
@@ -493,8 +499,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   move_speed: 3
   Grounded: 0
-  Jumppower: 350
-  rayDistance: 0.5
+  Jumppower: 250
+  rayDistance: 0.31
 --- !u!1 &1624068848
 GameObject:
   m_ObjectHideFlags: 0
