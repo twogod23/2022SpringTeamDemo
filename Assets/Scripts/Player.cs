@@ -60,7 +60,7 @@ public class Player : MonoBehaviour
 		    input.z = Input.GetAxis("Vertical");
 		    input.Normalize();
             //　方向キーが多少押されている
-			if (input.magnitude > 0f) {
+			if (input.magnitude > 0.01f) {
                 Vector3 cameraForward = Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 0, 1)).normalized;
                 Vector3 cameraRight = Vector3.Scale(Camera.main.transform.right, new Vector3(1, 0, 1)).normalized;
                 Vector3 moveForward = cameraForward * input.z + cameraRight * input.x;
