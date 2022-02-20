@@ -6,14 +6,15 @@ TagManager:
   tags:
   - Cloud
   - Up
+  - RetryPoint
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - RetryPoint
   - Water
   - UI
-  - 
+  - Miss
   - 
   - 
   - 
