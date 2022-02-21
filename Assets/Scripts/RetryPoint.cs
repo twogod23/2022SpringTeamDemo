@@ -4,6 +4,12 @@ using UnityEngine;
 public class RetryPoint : MonoBehaviour
 {
     private Stack<Transform> _retryPointStack = new Stack<Transform>();
+    public GameObject randomset;
+
+    void Start()
+    {
+        randomset = GameObject.Find("RamdomSet");
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -16,11 +22,12 @@ public class RetryPoint : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        //敵に接触
+        //Missに接触
         if (other.gameObject.layer == LayerMask.NameToLayer("Miss"))
         {
             //座標を戻す
             this.gameObject.transform.position = _retryPointStack.Peek().position;
+            randomset.GetComponent<RandomSet>().Set();
 
             //その他、フェードや諸々の設定を元に戻すなどのリトライ処理
             //元に戻したい処理が増えてくるなら、
